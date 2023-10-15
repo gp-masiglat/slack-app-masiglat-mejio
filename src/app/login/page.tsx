@@ -122,7 +122,7 @@ export default function Page() {
         </button>
         <h1 className="text-red-700 text-2xl bg-gray-200">{errorMessage}</h1>
         <Link className="underline" href="/login/signup">
-          Create Account
+          <button className="bg-green-800 hover:bg-green-500 text-white">Create Account</button>
         </Link>
       </form>
     </div>
