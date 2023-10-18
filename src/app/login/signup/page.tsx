@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Input from "../../components/Input";
 import { json } from "stream/consumers";
 
 export default function Page() {
@@ -15,11 +16,11 @@ export default function Page() {
   const onConfirmPasswordChange = (e: any) =>
     setConfirmPassword(e.target.value);
 
-  async function getData() {
+  async function createUser() {
     const body = {
-      email: email,
-      password: password,
-      password_confirmation: confirmPassword,
+      email,
+      password,
+      confirmPassword,
     };
     try {
       const res = await fetch(`http://206.189.91.54/api/v1/auth`, {
@@ -51,7 +52,7 @@ export default function Page() {
       return;
     }
 
-    getData();
+    createUser();
 
     // console.log(data);
   };
@@ -62,51 +63,30 @@ export default function Page() {
         className="flex flex-col w-1/2 items-center bg-green-300 shadow-md rounded px-8 pt-6 pb-8 mb-4 space-y-5"
         onSubmit={submitHandler}
       >
-        <div className="w-full">
-          <label htmlFor="email" className="block text-gray-700 font-bold">
-            Email
-          </label>
-          <input
-            id="email"
-            title="Email"
-            type="text"
-            onChange={onEmailChange}
-            value={email}
-            placeholder="example@example.com"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline  text-center font-bold"
-          />
-        </div>
-        <div className="w-full">
-          <label htmlFor="password" className="block text-gray-700 font-bold">
-            Password
-          </label>
-          <input
-            id="password"
-            title="Password"
-            type="password"
-            onChange={onPasswordChange}
-            value={password}
-            placeholder="Must contain atleast 6 characters"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline  text-center font-bold"
-          />
-        </div>
-        <div className="w-full">
-          <label
-            htmlFor="confirmPassword"
-            className="block text-gray-700 font-bold"
-          >
-            Confirm Password
-          </label>
-          <input
-            id="confirmPassword"
-            title="Confirm Password"
-            type="password"
-            onChange={onConfirmPasswordChange}
-            value={confirmPassword}
-            placeholder="Confirm Password"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline  text-center font-bold"
-          />
-        </div>
+        <Input
+          key="email"
+          label="Email Address"
+          type="text"
+          id="email"
+          value={email}
+          onChange={onEmailChange}
+        />
+        <Input
+          key="password"
+          label="Password"
+          type="password"
+          id="password"
+          value={password}
+          onChange={onPasswordChange}
+        />
+        <Input
+          key="confirmPassword"
+          label="Confirm Password"
+          type="password"
+          id="confirmPassword"
+          value={confirmPassword}
+          onChange={onConfirmPasswordChange}
+        />
         <button
           className="bg-blue-500 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:bg-gray-700 disabled:cursor-not-allowed"
           type="submit"
