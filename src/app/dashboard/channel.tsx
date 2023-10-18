@@ -1,15 +1,39 @@
-'use client';
+import React, { useState } from "react";
 
-import React from 'react';
-
-
-const Channel = () => {
-  return (
-    <main>
-        <button>Add Channel</button>
-    </main>
-    
-  )
+interface ChannelProps {
+  members: string[];
+  messages: string[];
+  onSendMessage: (message: string) => void;
 }
 
-export default Channel
+const Channel: React.FC<ChannelProps> = ({ members, messages, onSendMessage }) => {
+  const [message, setMessage] = useState<string>("");
+
+  const handleSend = () => {
+    if (message.trim() !== "") {
+      onSendMessage(message);
+      setMessage("");
+    }
+  };
+
+  return (
+    <div className="channel">
+      <div className="members">
+        {members.join(", ")}
+      </div>
+      <div className="messages">
+        {messages.map((msg, idx) => <div key={idx}>{msg}</div>)}
+      </div>
+      <div className="input-area">
+        <input
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          placeholder="Type your message..."
+        />
+        <button onClick={handleSend}>Send</button>
+      </div>
+    </div>
+  );
+};
+
+export default Channel;
