@@ -1,22 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, FormEvent } from "react";
 import { json } from "stream/consumers";
+import Input from "../components/Input";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+  const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loggedUser, setLoggedUser] = useState({});
 
-  const onUsernameChange = (e: any) => setUsername(e.target.value);
+  const onEmailChange = (e: any) => setEmail(e.target.value);
   const onPasswordChange = (e: any) => setPassword(e.target.value);
 
-  async function getData() {
+  const authenticateUser = async () => {
     const body = {
-      email: username,
-      password: password,
+      email,
+      password,
     };
+
     try {
       const res = await fetch(`http://206.189.91.54/api/v1/auth/sign_in`, {
         method: "POST",
@@ -24,61 +29,37 @@ export default function Page() {
         body: JSON.stringify(body),
       });
 
-      //fetch messages
-      // const res = await fetch(
-      //   `http://206.189.91.54/api/v1/messages?receiver_id=3919&receiver_class=User`,
-      //   {
-      //     method: "GET",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       "access-token": "AqYBR_nLgMH27sIke6M-1w",
-      //       expiry: "1698441627",
-      //       client: "0Z7wiwfHAvTC30S_aTZrtg",
-      //       uid: "gerome.pm@gmail.com",
-      //     },
-      //   }
-      // );
-
-      //fetch all users
-      // const res = await fetch(`http://206.189.91.54/api/v1/users`, {
-      //   method: "GET",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     "access-token": "AqYBR_nLgMH27sIke6M-1w",
-      //     expiry: "1698441627",
-      //     client: "0Z7wiwfHAvTC30S_aTZrtg",
-      //     uid: "gerome.pm@gmail.com",
-      //   },
-      // });
-
-      //send messages
-      // const res = await fetch(`http://206.189.91.54/api/v1/auth/sign_in`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(body),
-      // });
-
       const data = await res.json();
+      if (data.hasOwnProperty("errors")) {
+        setErrorMessage(data.errors.join("\n"));
+        return;
+      }
+      const id = data.data.id;
       const uid = res.headers.get("uid");
-      const expiry = res.headers.get("expiry");
+      const expiry = res.headers.get("expiry")!;
       const accessToken = res.headers.get("access-token");
       const client = res.headers.get("client");
-
-      console.log(data);
-      console.log(uid);
-      console.log(expiry);
-      console.log(accessToken);
-      console.log(client);
+      const loggedUser = {
+        id,
+        accessToken,
+        expiry,
+        client,
+        uid,
+      };
+      return loggedUser;
     } catch (err) {
       console.log(err);
     }
-  }
+  };
 
-  const submitHandler = async (e: any) => {
+  const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    getData();
-
-    // console.log(data);
+    authenticateUser();
+    const responseObject = await authenticateUser();
+    if (responseObject !== undefined) {
+      sessionStorage.setItem("loggedUser", JSON.stringify(responseObject));
+      router.push("./");
+    }
   };
 
   return (
@@ -87,42 +68,34 @@ export default function Page() {
         className="flex flex-col w-1/2 items-center bg-green-300 shadow-md rounded px-8 pt-6 pb-8 mb-4 space-y-5"
         onSubmit={submitHandler}
       >
-        <div className="w-full">
-          <label htmlFor="username" className="block text-gray-700 font-bold">
-            Username
-          </label>
-          <input
-            id="username"
-            title="Username"
-            type="text"
-            onChange={onUsernameChange}
-            value={username}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline  text-center font-bold"
-          />
-        </div>
-        <div className="w-full">
-          <label htmlFor="password" className="block text-gray-700 font-bold">
-            Password
-          </label>
-          <input
-            id="password"
-            title="Password"
-            type="password"
-            onChange={onPasswordChange}
-            value={password}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline  text-center font-bold"
-          />
-        </div>
+        <Input
+          key="email"
+          label="Email"
+          type="text"
+          id="email"
+          value={email}
+          onChange={onEmailChange}
+        />
+        <Input
+          key="password"
+          label="Password"
+          type="password"
+          id="password"
+          value={password}
+          onChange={onPasswordChange}
+        />
         <button
           className="bg-blue-500 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:bg-gray-700 disabled:cursor-not-allowed"
           type="submit"
-          disabled={username === "" || password === ""}
+          disabled={email === "" || password === ""}
         >
           Login
         </button>
         <h1 className="text-red-700 text-2xl bg-gray-200">{errorMessage}</h1>
         <Link className="underline" href="/login/signup">
-          <button className="bg-green-800 hover:bg-green-500 text-white">Create Account</button>
+          <button className="bg-green-800 hover:bg-green-500 text-white">
+            Create Account
+          </button>
         </Link>
       </form>
     </div>
