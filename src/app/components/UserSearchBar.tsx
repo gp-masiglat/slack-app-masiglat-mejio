@@ -2,10 +2,10 @@
 import { useEffect, useState, FC, ReactElement } from "react";
 
 interface Props {
-  setConversationPartner: any;
+  setUserObject: any;
 }
 const UserSearchBar: FC<Props> = (props) => {
-  const { setConversationPartner } = props;
+  const { setUserObject } = props;
   const [searchInput, setSearchInput] = useState("");
   const [usersArray, setUsersArray] = useState<any[]>([]);
   const [filteredDataArray, setFilteredDataArray] = useState<any[]>([]);
@@ -43,7 +43,6 @@ const UserSearchBar: FC<Props> = (props) => {
   };
 
   const setError = () => {
-    // console.log(usersArray);
     if (searchInput === "") setErrorMessage("Please Enter an Email Address");
     else if (!usersArray.find((item) => item.email === searchInput))
       setErrorMessage("User not found");
@@ -52,7 +51,7 @@ const UserSearchBar: FC<Props> = (props) => {
   const onConfirmClick = () => {
     if (errorMessage === "") {
       const userObject = usersArray.find((item) => item.email === searchInput);
-      if (userObject) setConversationPartner(userObject);
+      if (userObject) setUserObject(userObject);
     }
   };
 
