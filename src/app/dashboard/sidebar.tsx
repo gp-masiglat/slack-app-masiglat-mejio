@@ -21,12 +21,15 @@ interface SidebarProps {
   onSelectChannel: (name: string) => void;
 }
 
-function Sidebar({ showSidebar, hideSidebar }: SidebarProps) {
+function Sidebar({ showSidebar, hideSidebar, channels, onAddChannel, onSelectChannel }: SidebarProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  /*useEffect(() => {
-    setSidebarOpen(showSidebar);
-  }, [showSidebar]); */
+  useEffect(() => {
+    setSidebarOpen(true);
+    return () => {
+      setSidebarOpen(false);
+    };
+  }, []);
 
   const onSidebarClose = () => {
     hideSidebar();
