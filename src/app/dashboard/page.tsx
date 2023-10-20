@@ -1,14 +1,14 @@
+"use client";
+
 import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 import Channel from "./Channel";
 import "./dashboard.css";
 
-interface DashboardProps {
-  showSidebar: () => void;
-  hideSidebar: () => void;
-}
+interface DashboardProps {}
 
-const Dashboard: React.FC<DashboardProps> = ({ showSidebar, hideSidebar }) => {
+const Dashboard: React.FC<DashboardProps> = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [channels, setChannels] = useState<string[]>([]);
   const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
   const [messages, setMessages] = useState<Record<string, string[]>>({});
@@ -35,8 +35,8 @@ const Dashboard: React.FC<DashboardProps> = ({ showSidebar, hideSidebar }) => {
     <div className="dashboard">
       <header className="dashboard-header">
         <Sidebar
-          showSidebar={showSidebar}
-          hideSidebar={hideSidebar}
+          showSidebar={() => setSidebarOpen(true)}
+          hideSidebar={() => setSidebarOpen(false)}
           channels={channels}
           onAddChannel={handleAddChannel}
           onSelectChannel={handleSelectChannel}
