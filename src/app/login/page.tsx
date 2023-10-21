@@ -54,11 +54,10 @@ export default function Page() {
 
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    authenticateUser();
     const responseObject = await authenticateUser();
     if (responseObject !== undefined) {
       sessionStorage.setItem("loggedUser", JSON.stringify(responseObject));
-      router.push("./");
+      router.back();
     }
   };
 
@@ -93,9 +92,7 @@ export default function Page() {
         </button>
         <h1 className="text-red-700 text-2xl bg-gray-200">{errorMessage}</h1>
         <Link className="underline" href="/login/signup">
-          <button className="bg-green-800 hover:bg-green-500 text-white">
-            Create Account
-          </button>
+          <button className="underline">Create Account</button>
         </Link>
       </form>
     </div>

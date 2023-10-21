@@ -94,6 +94,9 @@ export default function Page() {
         >
           Signup
         </button>
+        <button className="underline" onClick={() => router.back()}>
+          Back to Login
+        </button>
         <strong className="font-bold whitespace-pre-line">
           {errorMessage}
         </strong>
