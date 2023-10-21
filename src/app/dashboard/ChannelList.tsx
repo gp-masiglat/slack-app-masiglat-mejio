@@ -10,8 +10,10 @@ const ChannelList: React.FC<ChannelListProps> = ({ channels, onAddChannel, onSel
   const [channelName, setChannelName] = useState<string>("");
 
   const handleAddChannel = () => {
-    onAddChannel(channelName);
-    setChannelName("");
+    if (channelName.trim()) {
+      onAddChannel(channelName);
+      setChannelName("");
+    }
   };
 
   return (
@@ -22,7 +24,7 @@ const ChannelList: React.FC<ChannelListProps> = ({ channels, onAddChannel, onSel
         </div>
       ))}
       <div className="add-channel">
-        <input value={channelName} onChange={e => setChannelName(e.target.value)} />
+        <input value={channelName} onChange={e => setChannelName(e.target.value)} placeholder="New channel name" />
         <button onClick={handleAddChannel}>Add Channel</button>
       </div>
     </div>

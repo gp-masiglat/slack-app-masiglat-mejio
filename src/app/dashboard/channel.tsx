@@ -4,10 +4,12 @@ interface ChannelProps {
   members: string[];
   messages: string[];
   onSendMessage: (message: string) => void;
+  onAddMember: (member: string) => void;
 }
 
-const Channel: React.FC<ChannelProps> = ({ members, messages, onSendMessage }) => {
+const Channel: React.FC<ChannelProps> = ({ members, messages, onSendMessage, onAddMember }) => {
   const [message, setMessage] = useState<string>("");
+  const [newMember, setNewMember] = useState<string>("");
 
   const handleSend = () => {
     if (message.trim() !== "") {
@@ -16,10 +18,17 @@ const Channel: React.FC<ChannelProps> = ({ members, messages, onSendMessage }) =
     }
   };
 
+  const handleAddMember = () => {
+    if (newMember.trim() !== "" && !members.includes(newMember)) {
+      onAddMember(newMember);
+      setNewMember("");
+    }
+  };
+
   return (
     <div className="channel">
       <div className="members">
-        {members.join(", ")}
+        Members: {members.join(", ")}
       </div>
       <div className="messages">
         {messages.map((msg, idx) => <div key={idx}>{msg}</div>)}
@@ -31,6 +40,14 @@ const Channel: React.FC<ChannelProps> = ({ members, messages, onSendMessage }) =
           placeholder="Type your message..."
         />
         <button onClick={handleSend}>Send</button>
+      </div>
+      <div className="add-member">
+        <input
+          value={newMember}
+          onChange={e => setNewMember(e.target.value)}
+          placeholder="Add member..."
+        />
+        <button onClick={handleAddMember}>Add Member</button>
       </div>
     </div>
   );
