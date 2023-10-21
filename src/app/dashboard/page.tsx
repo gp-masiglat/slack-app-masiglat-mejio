@@ -1,25 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Channel from "./Channel";
 import "./dashboard.css";
 
-interface DashboardProps {}
-
-const Dashboard: React.FC<DashboardProps> = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [channels, setChannels] = useState<string[]>([]);
+const Dashboard: React.FC = () => {
+  const [channels, setChannels] = useState<string[]>(JSON.parse(localStorage.getItem("channels") || "[]"));
   const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Record<string, string[]>>({});
+  const [messages, setMessages] = useState<Record<string, string[]>>(JSON.parse(localStorage.getItem("messages") || "{}"));
+  const [channelMembers, setChannelMembers] = useState<Record<string, string[]>>(JSON.parse(localStorage.getItem("channelMembers") || "{}"));
+
+  useEffect(() => {
+    localStorage.setItem("channels", JSON.stringify(channels));
+    localStorage.setItem("messages", JSON.stringify(messages));
+    localStorage.setItem("channelMembers", JSON.stringify(channelMembers));
+  }, [channels, messages, channelMembers]);
 
   const handleAddChannel = (name: string) => {
     setChannels([...channels, name]);
     setMessages({ ...messages, [name]: [] });
-  };
-
-  const handleSelectChannel = (name: string) => {
-    setSelectedChannel(name);
+    setChannelMembers({ ...channelMembers, [name]: [] });
   };
 
   const handleSendMessage = (message: string) => {
@@ -31,22 +32,30 @@ const Dashboard: React.FC<DashboardProps> = () => {
     }
   };
 
+  const handleAddMemberToChannel = (member: string) => {
+    if (selectedChannel) {
+      setChannelMembers({
+        ...channelMembers,
+        [selectedChannel]: [...channelMembers[selectedChannel], member],
+      });
+    }
+  };
+
   return (
     <div className="dashboard">
       <header className="dashboard-header">
         <Sidebar
-          showSidebar={() => setSidebarOpen(true)}
-          hideSidebar={() => setSidebarOpen(false)}
           channels={channels}
           onAddChannel={handleAddChannel}
-          onSelectChannel={handleSelectChannel}
+          onSelectChannel={setSelectedChannel}
         />
       </header>
       {selectedChannel && (
         <Channel
-          members={[]} // No Logic Yet
+          members={channelMembers[selectedChannel] || []}
           messages={messages[selectedChannel] || []}
           onSendMessage={handleSendMessage}
+          onAddMember={handleAddMemberToChannel}
         />
       )}
     </div>

@@ -6,22 +6,13 @@ import "./sidebar.css";
 import { IconContext } from "react-icons";
 import ChannelList from "./ChannelList";
 
-type SidebarItem = {
-  title: string;
-  path: string;
-  icon: JSX.Element;
-  cName: string;
-};
-
 interface SidebarProps {
-  showSidebar: () => void;
-  hideSidebar: () => void;
   channels: string[];
   onAddChannel: (name: string) => void;
   onSelectChannel: (name: string) => void;
 }
 
-function Sidebar({ showSidebar, hideSidebar, channels, onAddChannel, onSelectChannel }: SidebarProps) {
+const Sidebar: React.FC<SidebarProps> = ({ channels, onAddChannel, onSelectChannel }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -31,32 +22,40 @@ function Sidebar({ showSidebar, hideSidebar, channels, onAddChannel, onSelectCha
     };
   }, []);
 
-  const onSidebarClose = () => {
-    hideSidebar();
+  const handleAddChannel = (name: string) => {
+    onAddChannel(name);
     setSidebarOpen(false);
+  };
+
+  const handleSelectChannel = (name: string) => {
+    onSelectChannel(name);
+    setSidebarOpen(false);
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(prev => !prev);
   };
 
   return (
     <IconContext.Provider value={{ color: "black" }}>
       <div className="sidebar">
+        <button onClick={toggleSidebar}>X</button>
         <nav className={sidebarOpen ? "nav-menu active" : "nav-menu"}>
-          <ul className="nav-menu-items" onClick={onSidebarClose}>
-            <div>
-              {sidebardata.map((item: SidebarItem, index: number) => (
-                <li key={index} className={item.cName}>
-                  <Link href={item.path}>
-                    {item.icon}
-                    <span>{item.title}</span>
-                  </Link>
-                </li>
-              ))}
-              <ChannelList channels={channels} onAddChannel={onAddChannel} onSelectChannel={onSelectChannel} />
-            </div>
+          <ul className="nav-menu-items">
+            {sidebardata.map((item, index) => (
+              <li key={index} className={item.cName}>
+                <Link href={item.path}>
+                  {item.icon}
+                  <span>{item.title}</span>
+                </Link>
+              </li>
+            ))}
+            <ChannelList channels={channels} onAddChannel={handleAddChannel} onSelectChannel={handleSelectChannel} />
           </ul>
         </nav>
       </div>
     </IconContext.Provider>
   );
-}
+};
 
 export default Sidebar;
