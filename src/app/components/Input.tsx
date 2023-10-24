@@ -1,10 +1,10 @@
-import { FC, ReactElement } from "react";
+import { ChangeEvent, FC, ReactElement } from "react";
 
 interface Props {
   label: string;
   type: string;
   id: string;
-  onChange?: (e: React.ChangeEvent) => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   value: string;
 }
 const Input: FC<Props> = (props): ReactElement => {
