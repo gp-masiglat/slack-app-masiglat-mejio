@@ -1,8 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import "./homepage.css";
 import Header from "./components/Header";
 
 export default function Home() {

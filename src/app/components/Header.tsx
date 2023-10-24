@@ -23,6 +23,9 @@ const Header: FC<Props> = (props): ReactElement => {
       <Link href="/conversations" className="mx-4 underline">
         Conversations{" "}
       </Link>
+      <Link href="/channels" className="mx-4 underline">
+        Channels{" "}
+      </Link>
       {!hasAuthenticatedUser ? (
         <Link href="/login">
           <button
