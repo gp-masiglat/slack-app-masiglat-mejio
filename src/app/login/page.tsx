@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, FormEvent } from "react";
+import {
+  useEffect,
+  useState,
+  FormEvent,
+  FormEventHandler,
+  ChangeEvent,
+} from "react";
 import { json } from "stream/consumers";
 import Input from "../components/Input";
 import { useRouter } from "next/navigation";
@@ -13,8 +19,10 @@ export default function Page() {
   const [password, setPassword] = useState("");
   const [loggedUser, setLoggedUser] = useState({});
 
-  const onEmailChange = (e: any) => setEmail(e.target.value);
-  const onPasswordChange = (e: any) => setPassword(e.target.value);
+  const onEmailChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setEmail(e.target.value);
+  const onPasswordChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setPassword(e.target.value);
 
   const authenticateUser = async () => {
     const body = {
@@ -52,7 +60,9 @@ export default function Page() {
     }
   };
 
-  const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
+  const submitHandler: FormEventHandler<HTMLFormElement> = async (
+    e: FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
     const responseObject = await authenticateUser();
     if (responseObject !== undefined) {

@@ -1,8 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, FormEventHandler, useState } from "react";
 import Input from "../../components/Input";
-import { json } from "stream/consumers";
 
 export default function Page() {
   const router = useRouter();
@@ -11,9 +10,11 @@ export default function Page() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const onEmailChange = (e: any) => setEmail(e.target.value);
-  const onPasswordChange = (e: any) => setPassword(e.target.value);
-  const onConfirmPasswordChange = (e: any) =>
+  const onEmailChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setEmail(e.target.value);
+  const onPasswordChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setPassword(e.target.value);
+  const onConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) =>
     setConfirmPassword(e.target.value);
 
   async function createUser() {
@@ -37,7 +38,9 @@ export default function Page() {
     }
   }
 
-  const submitHandler = async (e: any) => {
+  const submitHandler: FormEventHandler<HTMLFormElement> = async (
+    e: FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
 
     if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
