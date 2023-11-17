@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect, useRef, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../components/Header";
@@ -27,14 +28,13 @@ export default function Page() {
   const router = useRouter();
   const [messagesArray, setMessagesArray] = useState<Message[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [loggedUser, setLoggedUser] = useState<User>();
+  const [loggedUser, setLoggedUser] = useState<User | null>();
   const [messageBody, setMessageBody] = useState("");
-  const [conversationPartner, setConversationPartner] = useState<User>();
+  const [conversationPartner, setConversationPartner] = useState<User | null>();
   const [conversationPartnerArray, setConversationPartnerArray] = useState<
     User[]
   >([]);
 
-  //add oto channels page.tsx to initialize logged in user
   useEffect(() => {
     if (isLoaded) {
       if (!sessionStorage.getItem("loggedUser")) {
@@ -48,7 +48,6 @@ export default function Page() {
     setIsLoaded(true);
   }, [isLoaded]);
 
-  // add to channels page.tsx to auto scroll to thread bottom
   useEffect(() => {
     if (messagesArray.length) {
       ref.current?.scrollIntoView({
@@ -58,7 +57,6 @@ export default function Page() {
     }
   }, [messagesArray.length]);
 
-  //retrieve messages and initialize interval fetching for psudo realtime messaging
   useEffect(() => {
     if (conversationPartner) {
       retrieveMessages();
@@ -75,6 +73,7 @@ export default function Page() {
           (item: { user_id: number }) => item.user_id === loggedUser.id
         ).conversation_partners
       );
+      // console.log(conversationPartnerArray);
     }
   }, [loggedUser]);
 
@@ -151,6 +150,43 @@ export default function Page() {
       if (!data.hasOwnProperty("errors")) {
         setMessageBody("");
 
+        const conversationRecordsArray = JSON.parse(
+          localStorage.getItem("conversations")!
+        );
+        const loggedUserIndex = conversationRecordsArray!.findIndex(
+          (userObject: { user_id: number }) =>
+            userObject.user_id === loggedUser!.id
+        );
+
+        // Add the new partner to the array
+        conversationRecordsArray[loggedUserIndex].conversation_partners.push({
+          id: conversationPartner!.id,
+          email: conversationPartner!.email,
+        });
+
+        // Use a Set to remove duplicates based on 'id'
+        const uniquePartnersSet = new Set(
+          conversationRecordsArray[loggedUserIndex].conversation_partners.map(
+            (partner: { id: any }) => partner.id
+          )
+        );
+
+        // Convert the Set back to an array of unique partners
+        const uniquePartnersArray = Array.from(uniquePartnersSet).map((id) =>
+          conversationRecordsArray[loggedUserIndex].conversation_partners.find(
+            (partner: { id: number }) => partner.id === id
+          )
+        );
+
+        // Update the conversation_partners array with unique partners
+        conversationRecordsArray[loggedUserIndex].conversation_partners =
+          uniquePartnersArray;
+
+        setConversationPartnerArray(uniquePartnersArray);
+        localStorage.setItem(
+          "conversations",
+          JSON.stringify(conversationRecordsArray)
+        );
         retrieveMessages();
       }
     } catch (err) {
@@ -199,12 +235,14 @@ export default function Page() {
               <div
                 key={item.id}
                 className={`flex flex-col w-1/2  p-1 break-all mb-4 group ${
-                  item.sender.id === loggedUser!.id
-                    ? "self-end flex-row-reverse"
-                    : ""
+                  item.sender.id === loggedUser!.id ? "self-end" : ""
                 }`}
               >
-                <div className="flex">
+                <div
+                  className={`flex ${
+                    item.sender.id === loggedUser!.id ? " flex-row-reverse" : ""
+                  }`}
+                >
                   <div
                     className={`flex h-14 w-16 border items-center justify-center  rounded-full text-center  ${
                       item.sender.id === loggedUser!.id

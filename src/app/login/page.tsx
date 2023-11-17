@@ -8,16 +8,14 @@ import {
   FormEventHandler,
   ChangeEvent,
 } from "react";
-import { json } from "stream/consumers";
 import Input from "../components/Input";
 import { useRouter } from "next/navigation";
 
 export default function Page() {
   const router = useRouter();
-  const [errorMessage, setErrorMessage] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loggedUser, setLoggedUser] = useState({});
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const onEmailChange = (e: ChangeEvent<HTMLInputElement>) =>
     setEmail(e.target.value);
@@ -54,6 +52,7 @@ export default function Page() {
         client,
         uid,
       };
+
       return loggedUser;
     } catch (err) {
       console.log(err);
@@ -67,6 +66,28 @@ export default function Page() {
     const responseObject = await authenticateUser();
     if (responseObject !== undefined) {
       sessionStorage.setItem("loggedUser", JSON.stringify(responseObject));
+      const conversationRecordsArray = JSON.parse(
+        localStorage.getItem("conversations")!
+      );
+      if (conversationRecordsArray) {
+        const loggedUserIndex = conversationRecordsArray!.findIndex(
+          (userObject: { id: number }) => userObject.id === responseObject!.id
+        );
+        if (loggedUserIndex === -1)
+          conversationRecordsArray.push({
+            user_id: responseObject!.id,
+            conversation_partners: [],
+          });
+      } else
+        localStorage.setItem(
+          "conversations",
+          JSON.stringify([
+            {
+              user_id: responseObject!.id,
+              conversation_partners: [],
+            },
+          ])
+        );
       router.back();
     }
   };
