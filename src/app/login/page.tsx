@@ -73,11 +73,17 @@ export default function Page() {
         const loggedUserIndex = conversationRecordsArray!.findIndex(
           (userObject: { id: number }) => userObject.id === responseObject!.id
         );
-        if (loggedUserIndex === -1)
+        console.log(loggedUserIndex);
+        if (loggedUserIndex === -1) {
           conversationRecordsArray.push({
             user_id: responseObject!.id,
             conversation_partners: [],
           });
+          localStorage.setItem(
+            "conversations",
+            JSON.stringify(conversationRecordsArray)
+          );
+        }
       } else
         localStorage.setItem(
           "conversations",

@@ -73,7 +73,6 @@ export default function Page() {
           (item: { user_id: number }) => item.user_id === loggedUser.id
         ).conversation_partners
       );
-      // console.log(conversationPartnerArray);
     }
   }, [loggedUser]);
 
@@ -81,15 +80,15 @@ export default function Page() {
     setMessageBody(e.target.value);
 
   const retrieveMessages = async () => {
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-      "access-token": loggedUser?.accessToken ?? "",
-      expiry: loggedUser?.expiry ?? "",
-      client: loggedUser?.client ?? "",
-      uid: loggedUser?.uid ?? "",
-    };
-
     try {
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+        "access-token": loggedUser?.accessToken ?? "",
+        expiry: loggedUser?.expiry ?? "",
+        client: loggedUser?.client ?? "",
+        uid: loggedUser?.uid ?? "",
+      };
+
       const res = await fetch(
         `http://206.189.91.54/api/v1/messages?receiver_id=${
           conversationPartner!.id
@@ -200,10 +199,12 @@ export default function Page() {
       <div className="flex p-4 bg-white w-full h-screen overflow-hidden">
         <div className="w-1/3 pt-3 bg-white border-r border-slate-100">
           <div className=" h-10 text-slate-300">
-            <UserSearchBar
-              setUserObject={setConversationPartner}
-              placeHolderText="Enter Email Address to Start or Continue a Conversation . . ."
-            />
+            {loggedUser && (
+              <UserSearchBar
+                setUserObject={setConversationPartner}
+                placeHolderText="Enter Email Address to Start or Continue a Conversation . . ."
+              />
+            )}
           </div>
           <div className="user-list overflow-y-auto h-screen bg-white">
             {conversationPartnerArray.map((item) => (
